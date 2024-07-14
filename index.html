@@ -202,6 +202,23 @@
                 { name: "Kill the Sleeping Golem in Leyndell" },
                 { name: "Collect 5 unique Seals" },
             ];
+            let markedCells = new Set();
+            const winningLines = [
+                [1, 2, 3, 4, 5], // Horizontal lines
+                [6, 7, 8, 9, 10],
+                [11, 12, 13, 14, 15],
+                [16, 17, 18, 19, 20],
+                [21, 22, 23, 24, 25],
+                [1, 6, 11, 16, 21], // Vertical lines
+                [2, 7, 12, 17, 22],
+                [3, 8, 13, 18, 23],
+                [4, 9, 14, 19, 24],
+                [5, 10, 15, 20, 25],
+                [1, 7, 13, 19, 25], // Diagonal lines
+                [5, 9, 13, 17, 21],
+            ];
+            var player1Check = [];
+            var player2Check = [];
 
             function startBingo() {
                 var list = [];
@@ -237,17 +254,56 @@
                     (!event.target.style.backgroundColor == "rgb(230, 73, 114)" ||
                         !event.target.style.backgroundColor == "rgb(88, 73, 230)" ||
                         event.target.style.backgroundColor == "") &&
-                    player1Score < 13 &&
-                    player2Score < 13
+                    winner == ""
                 ) {
                     event.target.style.backgroundColor = player;
 
                     if (player == "#e64972") {
                         player1Score++;
+                        player1Check.push(event.target.id);
                         document.getElementById("player1").innerHTML = "P1 " + player1Score;
+                        checkWinner(player1Check);
                     } else if (player == "#5849e6") {
                         player2Score++;
+                        player2Check.push(event.target.id);
                         document.getElementById("player2").innerHTML = "P2 " + player2Score;
+                        checkWinner(player2Check);
+                    }
+                } else {
+                    Swal.fire({
+                        title: "Ya ha habido un ganador!",
+                        text: "Reinicie el bingo si quiere volver a hacerlo!",
+                        icon: "error",
+                    });
+                }
+            }
+
+            function checkForWinningLine(playerCheck) {
+                for (let i = 0; i < winningLines.length; i++) {
+                    const currentLine = winningLines[i];
+                    if (currentLine.every((num) => playerCheck.includes(num.toString()))) {
+                        return true;
+                    }
+                }
+                return false;
+            }
+
+            function checkWinner(player) {
+                if (checkForWinningLine(player)) {
+                    if (player == player1Check) {
+                        winner = "Player 1";
+                        Swal.fire({
+                            title: "Ha ganado el jugador 1!",
+                            text: "Al completar una linea entera en el bingo de Elden Ring!",
+                            icon: "success",
+                        });
+                    } else {
+                        winner = "Player 2";
+                        Swal.fire({
+                            title: "Ha ganado el jugador 2!",
+                            text: "Al completar una linea entera en el bingo de Elden Ring!",
+                            icon: "success",
+                        });
                     }
                 }
 
@@ -256,14 +312,8 @@
                         winner = "Player 1";
                         Swal.fire({
                             title: "Ha ganado el jugador 1!",
-                            text: "Felicidades por ganar el bingo de Elden Ring!",
+                            text: "Al conseguir 13 puntos en el bingo de Elden Ring!",
                             icon: "success",
-                        });
-                    } else {
-                        Swal.fire({
-                            title: "Ya ha habido un ganador!",
-                            text: "Reinicie el bingo si quiere volver a hacerlo!",
-                            icon: "error",
                         });
                     }
                 } else if (player2Score == 13) {
@@ -271,14 +321,8 @@
                         winner = "Player 2";
                         Swal.fire({
                             title: "Ha ganado el jugador 2!",
-                            text: "Felicidades por ganar el bingo de Elden Ring!",
+                            text: "Al conseguir 13 puntos en el bingo de Elden Ring!",
                             icon: "success",
-                        });
-                    } else {
-                        Swal.fire({
-                            title: "Ya ha habido un ganador!",
-                            text: "Reinicie el bingo si quiere volver a hacerlo!",
-                            icon: "error",
                         });
                     }
                 }
